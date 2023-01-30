@@ -1,0 +1,617 @@
+[
+    {
+        "id": "07745f1c6df93d6e",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "4d5840e2bcc8e680",
+        "type": "group",
+        "z": "07745f1c6df93d6e",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "cb8dd859c6c334c3",
+            "e8bb874b59e39378",
+            "d5e5635ea23f1d83",
+            "a2705431aa7301e8"
+        ],
+        "x": 154,
+        "y": 39,
+        "w": 632,
+        "h": 122
+    },
+    {
+        "id": "cb8dd859c6c334c3",
+        "type": "modbus-read",
+        "z": "07745f1c6df93d6e",
+        "g": "4d5840e2bcc8e680",
+        "name": "C8_DPM",
+        "topic": "",
+        "showStatusActivities": false,
+        "logIOActivities": false,
+        "showErrors": false,
+        "showWarnings": true,
+        "unitid": "3",
+        "dataType": "HoldingRegister",
+        "adr": "1053",
+        "quantity": "12",
+        "rate": "3",
+        "rateUnit": "s",
+        "delayOnStart": false,
+        "startDelayTime": "",
+        "server": "7f3f1d475f6abf63",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "x": 280,
+        "y": 120,
+        "wires": [
+            [
+                "a2705431aa7301e8"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "665f5d479ea8ead6",
+        "type": "function",
+        "z": "07745f1c6df93d6e",
+        "name": "two Integer to FLOAT.",
+        "func": "var msgg=msg.payload;\nvar buf1 = Buffer.alloc(2); buf1.writeUInt16BE(msgg[0]);\nvar buf2 = Buffer.alloc(2); buf2.writeUInt16BE(msgg[1]);\nvar newbuff = Buffer.concat([buf1, buf2]);\n\nconst buf = newbuff;\nconst value = buf.readFloatBE();\n\n//msg.payload = value.toPrecision(4);\nmsg.payload={value:value.toPrecision(4)}\n\n//msg.payload = { buf1: buf1, buf2: buf2, buf3: buf3, newbuff: newbuff,value:value};\nreturn msg;\n\n\n\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 520,
+        "y": 620,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e8bb874b59e39378",
+        "type": "debug",
+        "z": "07745f1c6df93d6e",
+        "g": "4d5840e2bcc8e680",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 670,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "dadb98ec939d6da3",
+        "type": "inject",
+        "z": "07745f1c6df93d6e",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "[17042,-19739]",
+        "payloadType": "json",
+        "x": 280,
+        "y": 620,
+        "wires": [
+            [
+                "665f5d479ea8ead6"
+            ]
+        ]
+    },
+    {
+        "id": "d5e5635ea23f1d83",
+        "type": "comment",
+        "z": "07745f1c6df93d6e",
+        "g": "4d5840e2bcc8e680",
+        "name": "modbus address=address-1",
+        "info": "",
+        "x": 300,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "a2705431aa7301e8",
+        "type": "function",
+        "z": "07745f1c6df93d6e",
+        "g": "4d5840e2bcc8e680",
+        "name": "two Integer to FLOAT.",
+        "func": "var msgg=msg.payload;\nfunction int2float(int1, int2) {\n    const buf1 = Buffer.alloc(2); buf1.writeUInt16BE(int1);\n    const buf2 = Buffer.alloc(2); buf2.writeUInt16BE(int2);\n    const newbuff = Buffer.concat([buf1, buf2]);\n    return newbuff.readFloatBE().toPrecision(4);\n}\n/*\nconst v1=int2float(msgg[0],msgg[1]);\nconst v2=int2float(msgg[2],msgg[3]);\nconst v3=int2float(msgg[4],msgg[5]);\nconst v4=int2float(msgg[6],msgg[7]);\nconst v5=int2float(msgg[8],msgg[9]);\nconst v6=int2float(msgg[10],msgg[11]);\n\nmsg.payload = { v1: v1, v2: v2, v3: v3, v4: v4, v5: v5, v6: v6}\n*/\nvar mm=[];\nvar j=-1;\nfor (let i=0;i<12;i=i+2)\n{    j++;mm[j]=int2float(msgg[i],msgg[i+1])}\nmsg.payload=mm;\nreturn msg;\n\n\n\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 120,
+        "wires": [
+            [
+                "e8bb874b59e39378",
+                "2d69e8b71f556548",
+                "883bd5bc632a2dc9",
+                "246ac1fdca7c670d",
+                "a349034c8cd7076f",
+                "0784c1cdc058dc78",
+                "849067407273e458"
+            ]
+        ]
+    },
+    {
+        "id": "8a0a74479d506c5f",
+        "type": "modbus-read",
+        "z": "07745f1c6df93d6e",
+        "name": "C8_DPM",
+        "topic": "",
+        "showStatusActivities": false,
+        "logIOActivities": false,
+        "showErrors": false,
+        "showWarnings": true,
+        "unitid": "3",
+        "dataType": "HoldingRegister",
+        "adr": "1033",
+        "quantity": "6",
+        "rate": "3",
+        "rateUnit": "s",
+        "delayOnStart": false,
+        "startDelayTime": "",
+        "server": "7f3f1d475f6abf63",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "x": 240,
+        "y": 320,
+        "wires": [
+            [
+                "6f73e05c47344e06"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "6f73e05c47344e06",
+        "type": "function",
+        "z": "07745f1c6df93d6e",
+        "name": "two Integer to FLOAT.",
+        "func": "var msgg=msg.payload;\nfunction int2float(int1, int2) {\n    const buf1 = Buffer.alloc(2); buf1.writeUInt16BE(int1);\n    const buf2 = Buffer.alloc(2); buf2.writeUInt16BE(int2);\n    const newbuff = Buffer.concat([buf1, buf2]);\n    return newbuff.readFloatBE().toPrecision(4);\n}\n\nvar mm=[];\nvar j=-1;\nfor (let i=0;i<6;i=i+2)\n{    j++;mm[j]=int2float(msgg[i],msgg[i+1])}\nmsg.payload=mm;\nreturn msg;\n\n\n\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 440,
+        "y": 320,
+        "wires": [
+            [
+                "a7147a6a00b5df01",
+                "722f740c4be6be91",
+                "470de970e4f97d18",
+                "7f0138b58f6d45cb"
+            ]
+        ]
+    },
+    {
+        "id": "a7147a6a00b5df01",
+        "type": "ui_text",
+        "z": "07745f1c6df93d6e",
+        "group": "309239ab1ae786c8",
+        "order": 7,
+        "width": 4,
+        "height": 2,
+        "name": "",
+        "label": "Current, R",
+        "format": "{{msg.payload[0]}}",
+        "layout": "col-center",
+        "className": "",
+        "x": 670,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "470de970e4f97d18",
+        "type": "ui_text",
+        "z": "07745f1c6df93d6e",
+        "group": "309239ab1ae786c8",
+        "order": 8,
+        "width": 4,
+        "height": 2,
+        "name": "",
+        "label": "Current, S",
+        "format": "{{msg.payload[1]}}",
+        "layout": "col-center",
+        "className": "",
+        "x": 670,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "722f740c4be6be91",
+        "type": "ui_text",
+        "z": "07745f1c6df93d6e",
+        "group": "309239ab1ae786c8",
+        "order": 9,
+        "width": 4,
+        "height": 2,
+        "name": "",
+        "label": "Current, T",
+        "format": "{{msg.payload[2]}}",
+        "layout": "col-center",
+        "className": "",
+        "x": 660,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "246ac1fdca7c670d",
+        "type": "ui_gauge",
+        "z": "07745f1c6df93d6e",
+        "name": "",
+        "group": "309239ab1ae786c8",
+        "order": 2,
+        "width": 4,
+        "height": 4,
+        "gtype": "gage",
+        "title": "V1-V2",
+        "label": "Volt",
+        "format": "{{payload[0]}}",
+        "min": "380",
+        "max": "420",
+        "colors": [
+            "#e6df0a",
+            "#00e626",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 370,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "883bd5bc632a2dc9",
+        "type": "ui_gauge",
+        "z": "07745f1c6df93d6e",
+        "name": "",
+        "group": "309239ab1ae786c8",
+        "order": 1,
+        "width": 4,
+        "height": 4,
+        "gtype": "gage",
+        "title": "V1-V3",
+        "label": "Volt",
+        "format": "{{payload[1]}}",
+        "min": "380",
+        "max": "420",
+        "colors": [
+            "#e6df0a",
+            "#00e626",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 510,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "2d69e8b71f556548",
+        "type": "ui_gauge",
+        "z": "07745f1c6df93d6e",
+        "name": "",
+        "group": "309239ab1ae786c8",
+        "order": 3,
+        "width": 4,
+        "height": 4,
+        "gtype": "gage",
+        "title": "V2-V3",
+        "label": "Volt",
+        "format": "{{payload[2]}}",
+        "min": "380",
+        "max": "420",
+        "colors": [
+            "#e6df0a",
+            "#00e626",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 650,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "a349034c8cd7076f",
+        "type": "ui_gauge",
+        "z": "07745f1c6df93d6e",
+        "name": "",
+        "group": "309239ab1ae786c8",
+        "order": 4,
+        "width": 4,
+        "height": 4,
+        "gtype": "gage",
+        "title": "V1-N",
+        "label": "Volt",
+        "format": "{{payload[3]}}",
+        "min": "180",
+        "max": "250",
+        "colors": [
+            "#e60a2b",
+            "#e60045",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 370,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "0784c1cdc058dc78",
+        "type": "ui_gauge",
+        "z": "07745f1c6df93d6e",
+        "name": "",
+        "group": "309239ab1ae786c8",
+        "order": 5,
+        "width": 4,
+        "height": 4,
+        "gtype": "gage",
+        "title": "V2-N",
+        "label": "Volt",
+        "format": "{{payload[4]}}",
+        "min": "180",
+        "max": "250",
+        "colors": [
+            "#ffff0a",
+            "#ffff00",
+            "#ffff00"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 510,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "849067407273e458",
+        "type": "ui_gauge",
+        "z": "07745f1c6df93d6e",
+        "name": "",
+        "group": "309239ab1ae786c8",
+        "order": 6,
+        "width": 4,
+        "height": 4,
+        "gtype": "gage",
+        "title": "V3-N",
+        "label": "Volt",
+        "format": "{{payload[5]}}",
+        "min": "180",
+        "max": "250",
+        "colors": [
+            "#0a18e6",
+            "#1b00e6",
+            "#433acb"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 650,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "5253f435bfa81aa3",
+        "type": "ui_chart",
+        "z": "07745f1c6df93d6e",
+        "name": "",
+        "group": "309239ab1ae786c8",
+        "order": 11,
+        "width": 0,
+        "height": 0,
+        "label": "",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#b31e1e",
+            "#fdde17",
+            "#0f57ff",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 650,
+        "y": 460,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7f0138b58f6d45cb",
+        "type": "function",
+        "z": "07745f1c6df93d6e",
+        "name": "function 11",
+        "func": "var m = {};\n\nvar d = global.get('data') || [[],[],[]];\n/*d[0][co]=msg.payload[0];\nd[1][co+1] = msg.payload[1];\nd[2][co+2] = msg.payload[2];\n*/\nm.labels = [\"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\"];\nm.series = ['Volt R', 'Volt S', 'Volt T'];\n\nd = [\n    [65, 59, 80, 81, 56, 55, 40],\n    [28, 48, 40, 19, 86, 27, 90],\n    [38, 28, 20, 49, 45, 60, 20]\n    ];\n\nm.data = d;\nreturn { payload: [m] };",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 440,
+        "wires": [
+            [
+                "5253f435bfa81aa3"
+            ]
+        ]
+    },
+    {
+        "id": "e400e8406573c4aa",
+        "type": "inject",
+        "z": "07745f1c6df93d6e",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 220,
+        "y": 440,
+        "wires": [
+            [
+                "7f0138b58f6d45cb"
+            ]
+        ]
+    },
+    {
+        "id": "d00daef2f4fff315",
+        "type": "function",
+        "z": "07745f1c6df93d6e",
+        "name": "function 12",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 890,
+        "y": 600,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c15204ae70121b77",
+        "type": "ui_template",
+        "z": "07745f1c6df93d6e",
+        "group": "309239ab1ae786c8",
+        "name": "",
+        "order": 10,
+        "width": 0,
+        "height": 0,
+        "format": "<style>\n    .label {\n        color: blue;\n        padding: 8px;\n        font-family: Arial;\n        font-size :larg;\n            }\n</style>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 940,
+        "y": 360,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7f3f1d475f6abf63",
+        "type": "modbus-client",
+        "name": "c8_dpm",
+        "clienttype": "tcp",
+        "bufferCommands": true,
+        "stateLogEnabled": false,
+        "queueLogEnabled": false,
+        "failureLogEnabled": true,
+        "tcpHost": "192.168.11.1",
+        "tcpPort": "502",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyUSB",
+        "serialType": "RTU-BUFFERD",
+        "serialBaudrate": "9600",
+        "serialDatabits": "8",
+        "serialStopbits": "1",
+        "serialParity": "none",
+        "serialConnectionDelay": "100",
+        "serialAsciiResponseStartDelimiter": "0x3A",
+        "unit_id": "1",
+        "commandDelay": "1",
+        "clientTimeout": "1000",
+        "reconnectOnTimeout": true,
+        "reconnectTimeout": "2000",
+        "parallelUnitIdsAllowed": true,
+        "showWarnings": true,
+        "showLogs": true
+    },
+    {
+        "id": "309239ab1ae786c8",
+        "type": "ui_group",
+        "name": "DPM1",
+        "tab": "c0d705d25305531a",
+        "order": 1,
+        "disp": true,
+        "width": 12,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "c0d705d25305531a",
+        "type": "ui_tab",
+        "name": "DPM",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    }
+]
